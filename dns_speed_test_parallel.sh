@@ -23,9 +23,12 @@ test_dns() {
     if [[ -z "$RESPONSE_TIME" ]]; then
         RESPONSE_TIME="Timeout"
     fi
-    printf "%-20s %s ms\n" "$DNS_SERVER" "$RESPONSE_TIME" >> "$RESULTS_FILE"
+    if [[ "$RESPONSE_TIME" == "Timeout" ]]; then
+        printf "%-20s %s\n" "$DNS_SERVER" "$RESPONSE_TIME" >> "$RESULTS_FILE"
+    else
+        printf "%-20s %s ms\n" "$DNS_SERVER" "$RESPONSE_TIME" >> "$RESULTS_FILE"
+    fi
 }
-
 # Run tests in parallel
 while read -r DNS_SERVER; do
     if [[ -n "$DNS_SERVER" ]]; then
