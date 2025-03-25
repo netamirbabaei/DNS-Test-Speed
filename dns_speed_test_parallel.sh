@@ -7,9 +7,9 @@ if [ ! -f dns_servers.txt ]; then
 fi
 
 echo "Testing DNS latency (10s max)..."
-echo "-------------------------------------"
-echo "DNS Server          Response Time (ms)    Total Request Time (ms)"
-echo "-------------------------------------"
+echo "---------------------------------------------------------------------------------"
+printf "%-20s %-25s %-20s\n" "DNS Server" "Response Time (ms)" "Total Request Time (ms)"
+echo "---------------------------------------------------------------------------------"
 
 TEST_DOMAIN="download.docker.com"
 
@@ -32,9 +32,9 @@ test_dns() {
         RESPONSE_TIME="Timeout"
     fi
     if [[ "$RESPONSE_TIME" == "Timeout" ]]; then
-        printf "%-20s %s\n" "$DNS_SERVER" "$RESPONSE_TIME" >> "$RESULTS_FILE"
+        printf "%-20s %-25s %-20s\n" "$DNS_SERVER" "$RESPONSE_TIME" "N/A" >> "$RESULTS_FILE"
     else
-        printf "%-20s %s ms                  %s ms\n" "$DNS_SERVER" "$RESPONSE_TIME" "$TOTAL_TIME" >> "$RESULTS_FILE"
+        printf "%-20s %-25s %-20s\n" "$DNS_SERVER" "$RESPONSE_TIME" "$TOTAL_TIME" >> "$RESULTS_FILE"
     fi
 }
 
@@ -49,6 +49,10 @@ done < dns_servers.txt
 sleep 10
 wait
 
+# Display results from the file
+echo "---------------------------------------------------------------------------------"
+cat "$RESULTS_FILE"
+
 # Determine best response time
 BEST_SERVER=""
 BEST_RESPONSE_TIME=9999
@@ -62,15 +66,15 @@ while read -r line; do
     fi
 done < "$RESULTS_FILE"
 
-echo "-------------------------------------"
+echo "---------------------------------------------------------------------------------"
 echo "Best DNS Server: $BEST_SERVER with response time: $BEST_RESPONSE_TIME ms"
 
-# Get the current active Wi-Fi connection name
-CURRENT_CONNECTION=$(nmcli -t -f NAME,ACTIVE con show --active | grep ':yes' | cut -d':' -f1)
+# Get the current active connection name
+CURRENT_CONNECTION=$(nmcli -t -f NAME,TYPE,STATE con show --active | grep -i 'ethernet' | awk -F: '{print $1}' | head -n 1)
 
 # Check if we have a valid connection
 if [ -z "$CURRENT_CONNECTION" ]; then
-    echo "Error: No active Wi-Fi connection found."
+    echo "Error: No active Ethernet connection found."
     exit 1
 fi
 
@@ -87,4 +91,4 @@ fi
 nmcli con up "$CURRENT_CONNECTION"  # Restart connection to apply new DNS settings
 
 echo "DNS configuration updated for $CURRENT_CONNECTION."
-echo "-------------------------------------"
+echo "---------------------------------------------------------------------------------"

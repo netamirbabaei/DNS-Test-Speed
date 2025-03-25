@@ -1,33 +1,87 @@
 # DNS Latency Test Script
 
-This script helps you test the latency of multiple DNS servers by measuring the response times for a specific domain. The script reads a list of DNS server addresses from a text file (`dns_servers.txt`) and displays the response times for each server, sorted from fastest to slowest. The script uses the `dig` command to query the DNS servers and outputs the results in a user-friendly format.
+This script allows you to test the latency of multiple DNS servers by measuring their response times for a specific domain. It reads DNS server IPs from a text file (`dns_servers.txt`), tests them using the `dig` command, and outputs the results in a human-readable format.
 
 ## Features
 
-- Tests the response time for multiple DNS servers in parallel.
-- Outputs DNS response times in milliseconds (ms).
-- Results are sorted by response time for easy comparison.
-- Easy to use with minimal setup.
+- Tests DNS latency for multiple servers in parallel.
+- Displays response times in milliseconds (ms) for each DNS server.
+- Sorts and displays results by response time (fastest to slowest).
+- Easily configurable with minimal setup.
 
 ## Prerequisites
 
 - Linux-based OS (Ubuntu, Rocky Linux, etc.)
-- `dig` command installed (usually comes with the `dnsutils` package).
+- `dig` command installed (usually part of the `dnsutils` package).
+- `nmcli` tool available (part of NetworkManager).
 
 ## Setup Instructions
 
-1. Clone this repository:
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/netamirbabaei/DNS-Test-Speed.git 
+   git clone https://github.com/netamirbabaei/DNS-Test-Speed.git
    cd DNS-Test-Speed/
    ```
-2. Modify dns_servers.txt
-Open dns_servers.txt and add or update the list of DNS servers you want to test (one per line).
-
-3. Run the script and view results:
+   
+2. Modify the dns_servers.txt file: Open the dns_servers.txt file and add the DNS servers you want to test (one per line). Example:
    ```bash
-   ./dns_speed_test_parallel.sh
+   185.51.200.2
+   78.157.42.101
+   5.202.100.101
+   5.202.100.100
    ```
+  
+3. Run the script:
+   ```bash
+   sudo ./dns_speed_test_parallel.sh
+   ```
+   
+   The script will:
+   - Test each DNS server.
+   - Display response times for each DNS server.
+   - Sort and display the results by latency.
+   - Automatically update the system's DNS settings based on the fastest server (if it's under 150ms latency).
 
-The script will output the DNS response times, sorted from fastest to slowest.
+4. View the results:
+   The script will output DNS server response times, sorted from fastest to slowest. The best DNS server will be selected, and your system’s DNS configuration will be updated accordingly.
+
+### Example Output
+   ```bash
+   ---------------------------------------------------------------------------------
+   DNS Server           Response Time (ms)        Total Request Time (ms)
+   ---------------------------------------------------------------------------------
+   185.51.200.2         51                        88                  
+   78.157.42.101        64                        98                  
+   5.202.100.101        60                        91                  
+   5.202.100.100        68                        99                  
+   78.157.42.100        67                        101                 
+   185.55.226.26        125                       170                 
+   10.202.10.10         129                       172                 
+   10.202.10.11         175                       223                 
+   178.22.122.100       1263                      11319               
+   10.202.10.202        Timeout                   N/A                 
+   10.202.10.102        Timeout                   N/A                 
+   185.55.225.25        Timeout                   N/A                 
+   ---------------------------------------------------------------------------------
+   Best DNS Server: 185.51.200.2 with response time: 51 ms
+   Setting 185.51.200.2 as the DNS for Wired connection 1...
+   Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/29)
+   DNS configuration updated for Wired connection 1.
+   ---------------------------------------------------------------------------------
+   ```
+## Customization
+
+- Modify Default DNS Servers: You can change the default DNS servers in the script by updating the DEFAULT_DNS array.
+- Change Test Domain: The script currently tests DNS servers with the domain download.docker.com. You can change the domain by modifying the TEST_DOMAIN variable in the script.
+
+## Troubleshooting
+
+- Missing `dig` Command: If the dig command is not found, you can install it with:
+
+  ```bash
+  sudo apt install dnsutils  # Ubuntu/Debian
+  sudo yum install bind-utils  # CentOS/RHEL
+  ```
+  
+- No Active Ethernet Connection: If the script cannot find an active Ethernet connection, ensure that you have a valid network connection and that nmcli is available.
 
