@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail  # Enable strict error handling
+
 # Check if dns_servers.txt exists
 if [ ! -f dns_servers.txt ]; then
     echo "Error: dns_servers.txt not found!"
@@ -40,8 +42,10 @@ test_dns() {
 
 # Run tests in parallel
 while read -r DNS_SERVER; do
-    if [[ -n "$DNS_SERVER" ]]; then
+    if [[ -n "$DNS_SERVER" && "$DNS_SERVER" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         test_dns "$DNS_SERVER" &
+    else
+        echo "Warning: Invalid DNS server $DNS_SERVER, skipping."
     fi
 done < dns_servers.txt
 
@@ -69,12 +73,12 @@ done < "$RESULTS_FILE"
 echo "---------------------------------------------------------------------------------"
 echo "Best DNS Server: $BEST_SERVER with response time: $BEST_RESPONSE_TIME ms"
 
-# Get the current active connection name
-CURRENT_CONNECTION=$(nmcli -t -f NAME,TYPE,STATE con show --active | grep -i 'ethernet' | awk -F: '{print $1}' | head -n 1)
+# Get the current active connection name (Ethernet or Wi-Fi)
+CURRENT_CONNECTION=$(nmcli -t -f NAME,TYPE,STATE con show --active | grep -E 'ethernet|wifi|wireless' | awk -F: '{print $1}' | head -n 1)
 
 # Check if we have a valid connection
 if [ -z "$CURRENT_CONNECTION" ]; then
-    echo "Error: No active Ethernet connection found."
+    echo "Error: No active Ethernet or Wi-Fi connection found."
     exit 1
 fi
 
@@ -91,4 +95,3 @@ fi
 nmcli con up "$CURRENT_CONNECTION"  # Restart connection to apply new DNS settings
 
 echo "DNS configuration updated for $CURRENT_CONNECTION."
-echo "---------------------------------------------------------------------------------"
