@@ -1,13 +1,18 @@
 # DNS Latency Test Script
 
-This script allows you to test the latency of multiple DNS servers by measuring their response times for a specific domain. It reads DNS server IPs from a text file (`dns_servers.txt`), tests them using the `dig` command, and outputs the results in a human-readable format.
+This script allows you to test the latency of multiple DNS servers by measuring their response times for a specific domain. It reads DNS server IPs from a text file (`dns_servers.txt`), tests them using the `dig` command, and outputs the results in a human-readable format. The script now includes more robust error handling, DNS server validation, and automatic updates of the system's DNS settings.
+
 
 ## Features
 
-- Tests DNS latency for multiple servers in parallel.
+- Tests DNS latency for multiple servers in parallel (up to 50 concurrent requests).
 - Displays response times in milliseconds (ms) for each DNS server.
 - Sorts and displays results by response time (fastest to slowest).
-- Easily configurable with minimal setup.
+- Automatically updates DNS settings for the active network connection based on the fastest server (if latency is under 150ms).
+- Validates DNS server IP addresses to ensure they are properly formatted.
+- Handles errors gracefully and provides helpful messages for invalid DNS servers or network issues.
+- Supports Linux-based systems with NetworkManager and nmcli available.
+
 
 ## Prerequisites
 
