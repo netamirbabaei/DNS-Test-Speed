@@ -22,23 +22,46 @@ This script allows you to test the latency of multiple DNS servers by measuring 
 
 ## Setup Instructions
 
-1. **Clone the repository:**
+### 1. **Clone the repository:**
    ```bash
    git clone https://github.com/netamirbabaei/DNS-Test-Speed.git
    cd DNS-Test-Speed/
    ```
-   
-2. Modify the dns_servers.txt file: Open the dns_servers.txt file and add the DNS servers you want to test (one per line). Example:
+
+### 2. Install & Uninstall
+
    ```bash
-   185.51.200.2
-   78.157.42.101
-   5.202.100.101
-   5.202.100.100
+   # Install the program
+   make install
+
+   # Remove the program
+   make uninstall
    ```
-  
-3. Run the script:
+
+### 3. Manage DNS Servers
+
    ```bash
-   sudo ./dns_speed_test_parallel.sh
+   # Show the current DNS servers
+   dns_speed_test_parallel.sh --show
+
+   # Add new DNS servers
+   dns_speed_test_parallel.sh --add 185.51.200.2 78.157.42.101 5.202.100.101 5.202.100.100
+
+   # Remove specific DNS servers
+   dns_speed_test_parallel.sh --remove 185.51.200.2 78.157.42.101 5.202.100.101 5.202.100.100
+   ```
+
+   **Alternative method:**
+   You can also add new IP addresses directly to the `dns_servers.txt.bak` file, then run:
+
+   ```bash
+   make sync-conf
+   ```
+
+### 4. Run the script:
+
+   ```bash
+   sudo dns_speed_test_parallel.sh download.docker.com
    ```
    
    The script will:
@@ -47,10 +70,11 @@ This script allows you to test the latency of multiple DNS servers by measuring 
    - Sort and display the results by latency.
    - Automatically update the system's DNS settings based on the fastest server (if it's under 150ms latency).
 
-4. View the results:
+### 5. View the results:
+
    The script will output DNS server response times, sorted from fastest to slowest. The best DNS server will be selected, and your system’s DNS configuration will be updated accordingly.
 
-### Example Output
+#### Example Output
    ```bash
    ---------------------------------------------------------------------------------
    DNS Server           Response Time (ms)        Total Request Time (ms)
@@ -77,7 +101,6 @@ This script allows you to test the latency of multiple DNS servers by measuring 
 ## Customization
 
 - Modify Default DNS Servers: You can change the default DNS servers in the script by updating the DEFAULT_DNS array.
-- Change Test Domain: The script currently tests DNS servers with the domain download.docker.com. You can change the domain by modifying the TEST_DOMAIN variable in the script.
 
 ## Troubleshooting
 
