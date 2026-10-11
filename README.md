@@ -104,10 +104,11 @@ This script allows you to test the latency of multiple DNS servers by measuring 
 
 ## Troubleshooting
 
-- Missing `dig` Command: If the dig command is not found, you can install it with:
+- Missing `dig` and `nmcli` Commands: If the dig and nmcli  commands are not found, you can install them with:
 
   ```bash
   sudo apt install dnsutils  # Ubuntu/Debian
+  sudo apt install network-manager #Ubuntu/Debian
   sudo yum install bind-utils  # CentOS/RHEL
   ```
   
